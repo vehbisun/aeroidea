@@ -1,0 +1,228 @@
+/* ===== 1. Renkler ve ölçüler (değiştirmek kolay olsun diye en üstte) ===== */
+:root {
+  --arka-plan: #f3f7fb;
+  --kart: #ffffff;
+  --yazi: #14202e;
+  --yazi-soluk: #4a5b6d;
+  --ana-renk: #0b5cab;      /* koyu mavi */
+  --ana-renk-koyu: #084580;
+  --kenar: #c9d6e3;
+  --hata: #b00020;
+  --bosluk: 1rem;
+  --yuvarlak: 12px;
+}
+
+/* ===== 2. Genel ayarlar ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--yazi);
+  background: var(--arka-plan);
+}
+
+/* ===== 3. Üst kısım ===== */
+header {
+  padding: 2rem var(--bosluk);
+  text-align: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ana-renk-koyu), var(--ana-renk));
+}
+
+header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2rem;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  margin: 0;
+}
+
+/* ===== 4. Ana bölüm ===== */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--bosluk);
+}
+
+main section {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--kart);
+  border: 1px solid var(--kenar);
+  border-radius: var(--yuvarlak);
+}
+
+main h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: var(--ana-renk-koyu);
+}
+
+/* ===== 5. Form ===== */
+form > div {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.7rem;
+  font-size: 1rem;          /* telefonda yakınlaşmayı önler */
+  color: var(--yazi);
+  background: #ffffff;
+  border: 1px solid var(--kenar);
+  border-radius: 8px;
+}
+
+/* Klavye ile gezen kişi nerede olduğunu görsün (erişilebilirlik) */
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 3px solid #ffb703;
+  outline-offset: 2px;
+}
+
+/* Hatalı kutu için (Aşama 3'te JavaScript bu sınıfı ekleyecek) */
+.hatali {
+  border-color: var(--hata);
+  background: #fff5f6;
+}
+
+/* Hata mesajı satırları */
+[role="alert"] {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--hata);
+  min-height: 1.2em;        /* mesaj gelince sayfa zıplamasın */
+}
+
+/* ===== 6. Düğme ===== */
+button {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--ana-renk);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--ana-renk-koyu);
+}
+
+/* ===== 7. Sonuç alanı ===== */
+#sonuc {
+  color: var(--yazi-soluk);
+}
+
+/* ===== 8. Alt kısım ===== */
+footer {
+  padding: 1rem var(--bosluk) 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--yazi-soluk);
+}
+
+/* ===== 9. Büyük ekranlarda (bilgisayar) ===== */
+@media (min-width: 600px) {
+  button {
+    width: auto;
+    padding: 0.85rem 2rem;
+  }
+}
+
+/* Animasyon istemeyen kullanıcılara saygı */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ===== Aşama 4: düğme grubu, tablolar ve rapor ===== */
+.dugmeler {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* İkinci derece düğme (beyaz, mavi çerçeveli) */
+button.ikincil {
+  color: var(--ana-renk-koyu);
+  background: #ffffff;
+  border: 2px solid var(--ana-renk);
+}
+
+button.ikincil:hover {
+  background: #e8f1fb;
+}
+
+/* Tablolar */
+.tablo-kaydir {
+  overflow-x: auto; /* dar ekranda tablo kendi içinde kayar, sayfa kaymaz */
+}
+
+table {
+  width: 100%;
+  margin: 0.5rem 0 1rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--kenar);
+}
+
+thead th {
+  background: #e8f1fb;
+}
+
+tbody th {
+  font-weight: 600;
+  background: #f7fafd;
+}
+
+/* Rapor başlıkları */
+#rapor h3,
+#sonuc h3 {
+  margin: 0 0 0.25rem;
+  color: var(--yazi);
+}
+
+#rapor h4 {
+  margin: 1.25rem 0 0.25rem;
+  color: var(--ana-renk-koyu);
+}
+
+/* Uyarı kutusu */
+.uyari-kutu {
+  padding: 0.75rem 1rem;
+  background: #fff8e1;
+  border-left: 4px solid #ffb703;
+  border-radius: 8px;
+}
+
+@media (min-width: 600px) {
+  .dugmeler {
+    flex-direction: row;
+  }
+}

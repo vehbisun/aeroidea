@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AeroIdea – Uçak Konsept Üretici</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>AeroIdea</h1>
+    <p>Tercihlerini seç, uçak konseptinin taslak açıklamasını ve raporunu oluştur.</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="form-baslik">
+      <h2 id="form-baslik">1. Tercihlerin</h2>
+
+      <form id="konsept-formu" novalidate>
+
+        <div>
+          <label for="konsept-adi">Konsept adı</label>
+          <input type="text" id="konsept-adi" name="konsept-adi"
+                 placeholder="Örn: Mavi Kanat" maxlength="40">
+          <p id="konsept-adi-hata" role="alert"></p>
+        </div>
+
+        <div>
+          <label for="gorev">Uçak görevi</label>
+          <select id="gorev" name="gorev">
+            <option value="yolcu" selected>Yolcu taşımacılığı</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="kapasite">Yolcu kapasitesi (80–150)</label>
+          <input type="number" id="kapasite" name="kapasite"
+                 min="80" max="150" step="1" placeholder="Örn: 120">
+          <p id="kapasite-hata" role="alert"></p>
+        </div>
+
+        <div>
+          <label for="itki">Enerji / itki yaklaşımı</label>
+          <select id="itki" name="itki">
+            <option value="hibrit" selected>Hibrit elektrik</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="oncelik">Tasarım önceliği</label>
+          <select id="oncelik" name="oncelik">
+            <option value="enerji" selected>Enerji verimliliği</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="stil">Görsel stil</label>
+          <select id="stil" name="stil">
+            <option value="modern" selected>Modern ve gerçekçi</option>
+          </select>
+        </div>
+
+        <div class="dugmeler">
+          <button type="submit">Konsept oluştur</button>
+          <button type="button" id="ornek-dugme" class="ikincil">Örnek veriyle doldur</button>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="sonuc-baslik">
+      <h2 id="sonuc-baslik">2. Sonuç</h2>
+      <div id="sonuc" aria-live="polite">
+        <p>Henüz bir konsept oluşturulmadı.</p>
+      </div>
+    </section>
+    <section id="rapor-bolumu" aria-labelledby="rapor-baslik" hidden>
+      <h2 id="rapor-baslik">3. Rapor</h2>
+      <div id="rapor"></div>
+      <div class="dugmeler">
+        <button type="button" id="indir-dugme" class="ikincil">Raporu indir (.txt)</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Bu uygulama bir eğitim prototipidir. Gerçek mühendislik hesabı yapmaz.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
