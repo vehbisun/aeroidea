@@ -1,4 +1,4 @@
-// AeroIdea - Aşama 4
+// AeroIdea - Aşama 6B (n8n'e gönderme eklendi)
 // Bu dosya: (1) formu kontrol eder, (2) hata varsa mesaj gösterir,
 // (3) konsept açıklamasını yazar, (4) rapor üretir, (5) örnek veriyle demo yapar.
 
@@ -15,6 +15,10 @@ const ornekDugme = document.getElementById("ornek-dugme");
 const raporBolumu = document.getElementById("rapor-bolumu");
 const raporAlani = document.getElementById("rapor");
 const indirDugme = document.getElementById("indir-dugme");
+const n8nBolumu = document.getElementById("n8n-bolumu");
+const n8nAdresKutusu = document.getElementById("n8n-adres");
+const n8nGonderDugme = document.getElementById("n8n-gonder-dugme");
+const n8nDurum = document.getElementById("n8n-durum");
 
 // Kapasite sınırları (80–150 aralığı)
 const MIN_KAPASITE = 80;
@@ -314,6 +318,7 @@ function raporMetniOlustur(rapor) {
 }
 
 let sonRapor = null; // en son üretilen raporu burada saklarız
+let sonVeri = null;  // en son oluşturulan konsept paketini burada saklarız
 
 function raporuIndir() {
   if (!sonRapor) {
@@ -353,6 +358,140 @@ function konseptiGoster(v) {
   sonucAlani.append(baslik, ozet, itkiNotu, uyari);
 }
 
+// ===== 12b. n8n'e gönderme (Aşama 6B) =====
+// Durum mesajını yazar. tur: "basari", "hata" veya "bilgi" (renk için)
+function durumYaz(mesaj, tur) {
+  n8nDurum.textContent = mesaj;
+  n8nDurum.className = tur ? "durum-" + tur : "";
+}
+
+// Adres kutusunu kontrol eder. Geçerliyse adresi, değilse null döndürür.
+function n8nAdresiniKontrolEt() {
+  hataTemizle(n8nAdresKutusu, "n8n-adres-hata");
+  const adres = n8nAdresKutusu.value.trim();
+
+  if (adres === "") {
+    hataGoster(n8nAdresKutusu, "n8n-adres-hata", "Lütfen n8n webhook adresini yaz.");
+    n8nAdresKutusu.focus();
+    return null;
+  }
+
+  let url;
+  try {
+    url = new URL(adres); // geçersiz adreste hata fırlatır
+  } catch (hata) {
+    hataGoster(
+      n8nAdresKutusu,
+      "n8n-adres-hata",
+      "Bu geçerli bir adres değil. Adres http:// veya https:// ile başlamalı."
+    );
+    n8nAdresKutusu.focus();
+    return null;
+  }
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    hataGoster(
+      n8nAdresKutusu,
+      "n8n-adres-hata",
+      "Adres http:// veya https:// ile başlamalı."
+    );
+    n8nAdresKutusu.focus();
+    return null;
+  }
+
+  // https sayfalar, localhost dışındaki http adreslerine istek gönderemez.
+  const yerelMi = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  if (location.protocol === "https:" && url.protocol === "http:" && !yerelMi) {
+    hataGoster(
+      n8nAdresKutusu,
+      "n8n-adres-hata",
+      "Bu sayfa https ile açıldığı için localhost dışındaki http:// adreslerine gönderemez."
+    );
+    n8nAdresKutusu.focus();
+    return null;
+  }
+
+  return url.href;
+}
+
+// Raporu n8n'e gönderir. "async" = cevabı beklerken sayfa donmaz.
+async function n8nyeGonder() {
+  const adres = n8nAdresiniKontrolEt();
+  if (!adres) {
+    return;
+  }
+
+  if (!sonVeri || !sonRapor) {
+    durumYaz("Önce bir konsept oluştur.", "hata");
+    return;
+  }
+
+  // Gönderilecek paket: konsept bilgileri + rapor metni
+  const paket = Object.assign({}, sonVeri, {
+    rapor: raporMetniOlustur(sonRapor),
+    kaynak: "AeroIdea web uygulaması"
+  });
+
+  n8nGonderDugme.disabled = true; // üst üste basılmasın
+  durumYaz("Gönderiliyor...", "bilgi");
+
+  // 10 saniyede cevap gelmezse vazgeç
+  const sureKontrol = new AbortController();
+  const zamanAsimi = setTimeout(function () {
+    sureKontrol.abort();
+  }, 10000);
+
+  try {
+    const cevap = await fetch(adres, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(paket),
+      signal: sureKontrol.signal
+    });
+
+    if (cevap.status === 404) {
+      durumYaz(
+        "n8n bu adresi bulamadı (404). Test adresi kullanıyorsan önce n8n'de " +
+        "\"Execute workflow\" düğmesine bas, sonra tekrar gönder.",
+        "hata"
+      );
+    } else if (!cevap.ok) {
+      durumYaz("n8n hata döndürdü (kod: " + cevap.status + ").", "hata");
+    } else {
+      let mesaj = "";
+      try {
+        const json = await cevap.json();
+        mesaj = json.mesaj || "";
+      } catch (hata) {
+        // Cevap JSON değilse sorun değil, mesajsız devam ederiz
+      }
+      durumYaz(
+        "Gönderildi. n8n cevap verdi" + (mesaj ? ": " + mesaj : "") + ".",
+        "basari"
+      );
+    }
+  } catch (hata) {
+    if (hata.name === "AbortError") {
+      durumYaz("10 saniye içinde cevap gelmedi. n8n çalışıyor mu?", "hata");
+    } else {
+      durumYaz(
+        "Gönderilemedi. Olası nedenler: n8n çalışmıyor, adres yanlış, " +
+        "\"Execute workflow\" düğmesine basılmadı ya da tarayıcı isteği engelledi " +
+        "(CORS / yerel ağ izni). Ayrıntı için F12 → Console sekmesine bak.",
+        "hata"
+      );
+    }
+  } finally {
+    clearTimeout(zamanAsimi);
+    n8nGonderDugme.disabled = false;
+  }
+}
+
+function n8nDurumunuTemizle() {
+  durumYaz("", "");
+  hataTemizle(n8nAdresKutusu, "n8n-adres-hata");
+}
+
 // ===== 13. Düğmeye basılınca ne olacak? =====
 form.addEventListener("submit", function (olay) {
   olay.preventDefault();
@@ -361,14 +500,19 @@ form.addEventListener("submit", function (olay) {
     const veri = konseptVerisiOlustur();
     konseptiGoster(veri);
     sonRapor = raporYapisiOlustur(veri);
+    sonVeri = veri;
     raporuGoster(sonRapor);
+    n8nBolumu.hidden = false;
+    n8nDurumunuTemizle();
   } else {
     sonucAlani.innerHTML = "";
     const p = document.createElement("p");
     p.textContent = "Konsept oluşturulamadı. Lütfen işaretli alanları düzelt.";
     sonucAlani.append(p);
     sonRapor = null;
+    sonVeri = null;
     raporBolumu.hidden = true;
+    n8nBolumu.hidden = true;
   }
 });
 
@@ -385,8 +529,12 @@ ornekDugme.addEventListener("click", function () {
   form.requestSubmit(); // formu "Konsept oluştur"a basılmış gibi gönder
 });
 
-// ===== 15. "Raporu indir" düğmesi =====
+// ===== 15. "Raporu indir" ve "n8n'e gönder" düğmeleri =====
 indirDugme.addEventListener("click", raporuIndir);
+n8nGonderDugme.addEventListener("click", n8nyeGonder);
+n8nAdresKutusu.addEventListener("input", function () {
+  hataTemizle(n8nAdresKutusu, "n8n-adres-hata");
+});
 
 // ===== 16. Yazmaya başlayınca o kutunun hatasını sil =====
 adKutusu.addEventListener("input", function () {

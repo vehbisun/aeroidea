@@ -226,3 +226,22 @@ tbody th {
     flex-direction: row;
   }
 }
+
+/* ===== Aşama 6B: n8n durum mesajı ===== */
+#n8n-durum {
+  min-height: 1.5em;
+  margin: 0.75rem 0 0;
+  font-weight: 600;
+}
+
+.durum-basari {
+  color: #0a6b3d;
+}
+
+.durum-hata {
+  color: var(--hata);
+}
+
+.durum-bilgi {
+  color: var(--yazi-soluk);
+}

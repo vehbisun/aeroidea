@@ -81,6 +81,24 @@
         <button type="button" id="indir-dugme" class="ikincil">Raporu indir (.txt)</button>
       </div>
     </section>
+    <section id="n8n-bolumu" aria-labelledby="n8n-baslik" hidden>
+      <h2 id="n8n-baslik">4. n8n'e gönder (isteğe bağlı)</h2>
+      <p>Bu bölüm uygulamanın çalışması için şart değildir. Raporu n8n'deki webhook adresine göndermek için kullanılır.</p>
+
+      <div>
+        <label for="n8n-adres">n8n webhook adresi</label>
+        <input type="url" id="n8n-adres" name="n8n-adres"
+               placeholder="http://localhost:5678/webhook-test/aeroidea"
+               autocomplete="off" spellcheck="false">
+        <p id="n8n-adres-hata" role="alert"></p>
+      </div>
+
+      <div class="dugmeler">
+        <button type="button" id="n8n-gonder-dugme" class="ikincil">Raporu n8n'e gönder</button>
+      </div>
+
+      <p id="n8n-durum" role="status" aria-live="polite"></p>
+    </section>
   </main>
 
   <footer>
