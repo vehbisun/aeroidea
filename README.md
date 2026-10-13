@@ -30,7 +30,7 @@ Kullanıcı birkaç tercih seçer (konsept adı, yolcu kapasitesi vb.). Uygulama
 |---|---|
 | `index.html` | Sayfanın iskeleti (form + sonuç + rapor alanı) |
 | `style.css` | Görünüm, renkler, mobil uyum |
-| `app.js` | Girdi kontrolü, konsept ve rapor üretimi |
+| `app.js` | Girdi kontrolü, konsept ve rapor üretimi, n8n'e gönderme |
 
 ## Nasıl çalıştırılır?
 
@@ -40,7 +40,17 @@ Bilgisayarda `index.html` dosyasını tarayıcıda açmak yeterlidir. Kurulum, �
 
 - [x] Temel uygulama (form, kontrol, konsept, rapor, demo)
 - [x] GitHub Pages ile yayınlama
-- [ ] n8n ile otomasyon (isteğe bağlı sonraki aşama)
+- [x] n8n ile otomasyon (webhook ile veri alma ve kontrol)
+- [ ] n8n'de gelen veriyi e-posta / tabloya aktarma (isteğe bağlı)
+
+## n8n entegrasyonu (isteğe bağlı)
+
+Uygulama, oluşturulan raporu n8n'deki bir **webhook** adresine gönderebilir.
+
+- Webhook adresi kodun içinde **yoktur**. Sayfadaki "n8n webhook adresi" kutusuna elle yazılır.
+- n8n bu projede öğretmenin / takımın **kendi bilgisayarında** çalışır (`localhost`). Bu yüzden gönderme yalnızca n8n'in çalıştığı bilgisayardan yapılabilir. Başka bir cihazdan açılan sitede bu düğme çalışmaz.
+- n8n tarafında da girdi kontrolü yapılır: yolcu kapasitesi 80–150 dışındaysa n8n hata cevabı (400) döndürür.
+- Anahtar, şifre veya gizli adres bu depoya **yazılmamalıdır** (depo herkese açıktır).
 
 ## Ekip
 
